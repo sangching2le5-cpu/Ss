@@ -62,7 +62,6 @@ button{font-family:inherit;font-size:inherit;}
    ============================================================ */
 .layout{display:flex;min-height:100vh;align-items:stretch;}
 
-/* --- Sidebar --- */
 .sidebar{
   width:274px;flex:0 0 274px;
   background:#fff;
@@ -103,7 +102,6 @@ button{font-family:inherit;font-size:inherit;}
 .progress-bar{height:8px;border-radius:99px;background:var(--border-s);overflow:hidden;}
 .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,#7fb3e0,#4b86c4);border-radius:99px;transition:width .35s;}
 
-/* --- Main --- */
 .main{flex:1;min-width:0;display:flex;flex-direction:column;}
 .topbar{
   position:sticky;top:0;z-index:40;
@@ -340,6 +338,18 @@ span.hlu{
   text-decoration-color:#4b86c4;text-decoration-skip-ink:none;
 }
 
+/* Make sure text can always be selected */
+.annotatable, .annotatable *{
+  -webkit-user-select: text;
+  user-select: text;
+}
+/* Prevent layout problems with long highlighted words */
+.annotatable p, .annotatable li, .annotatable td, .annotatable th,
+.annotatable .example .en, .annotatable .example .vi, .annotatable .callout{
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 #hlBar{
   position:fixed;left:50%;transform:translateX(-50%);
   bottom:16px;z-index:70;
@@ -352,6 +362,8 @@ span.hlu{
   max-width:calc(100vw - 20px);
   overflow-x:auto;
   -webkit-overflow-scrolling:touch;
+  user-select:none;
+  -webkit-user-select:none;
 }
 #hlBar .sep{width:1px;height:26px;background:var(--border-s);flex:0 0 auto;margin:0 2px;}
 .hl-toggle{
@@ -383,6 +395,8 @@ span.hlu{
   position:fixed;z-index:90;display:flex;gap:5px;align-items:center;
   background:#fff;border:1px solid var(--border);border-radius:12px;
   box-shadow:0 8px 26px rgba(16,42,74,.20);padding:7px 8px;
+  user-select:none;
+  -webkit-user-select:none;
 }
 #selToolbar[hidden]{display:none;}
 #selToolbar button{
@@ -396,7 +410,6 @@ span.hlu{
 #selToolbar button.p{background:#ffc9d6;}
 #selToolbar button.u{text-decoration:underline;}
 
-/* My Highlights drawer */
 #hlDrawer{
   position:fixed;top:0;right:0;bottom:0;width:370px;max-width:92vw;
   background:#fff;border-left:1px solid var(--border);
@@ -433,7 +446,7 @@ span.hlu{
 .drawer-foot{padding:12px 16px;border-top:1px solid var(--border-s);}
 
 /* ============================================================
-   7. MODAL
+   7. MODAL & TOAST
    ============================================================ */
 #modalBack{
   position:fixed;inset:0;background:rgba(16,42,74,.42);z-index:120;
@@ -448,9 +461,6 @@ span.hlu{
 .modal p{color:var(--muted);font-size:.92rem;}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap;}
 
-/* ============================================================
-   8. TOAST
-   ============================================================ */
 #toast{
   position:fixed;left:50%;bottom:86px;transform:translate(-50%,20px);
   background:#1e2b3a;color:#fff;padding:10px 18px;border-radius:99px;
@@ -460,7 +470,7 @@ span.hlu{
 #toast.show{opacity:1;transform:translate(-50%,0);}
 
 /* ============================================================
-   9. RESPONSIVE
+   8. RESPONSIVE
    ============================================================ */
 #overlay{display:none;position:fixed;inset:0;background:rgba(16,42,74,.35);z-index:55;}
 #overlay.open{display:block;}
@@ -495,7 +505,7 @@ span.hlu{
   table.gram th,table.gram td{padding:8px 9px;}
 }
 @media print{
-  .sidebar,.topbar,#hlBar,#selToolbar,#hlDrawer,#overlay{display:none!important;}
+  .sidebar,.topbar,#hlBar,#selToolbar,#hlDrawer,#overlay,#toast,#modalBack{display:none!important;}
   .content{padding:0;max-width:none;}
   .page{display:block!important;}
 }
@@ -850,7 +860,7 @@ span.hlu{
             <h3>Complete the sentences</h3>
             <span class="ex-score" id="score-ex311">– / 11</span>
           </div>
-          <p class="ex-instructions" style="color:var(--muted);font-size:.9rem;">Điền vào chỗ trống dạng đúng của <em>have to</em> với động từ trong ngoặc. Chỉ gõ phần còn thiếu, ví dụ: <b>has to work</b>.</p>
+          <p style="color:var(--muted);font-size:.9rem;">Điền vào chỗ trống dạng đúng của <em>have to</em> với động từ trong ngoặc. Chỉ gõ phần còn thiếu, ví dụ: <b>has to work</b>.</p>
           <div id="body-ex311"></div>
           <div class="ex-actions">
             <button class="btn btn-primary" data-check="ex311">✓ Kiểm tra</button>
@@ -957,47 +967,47 @@ span.hlu{
 
 <!-- ==================== HIGHLIGHT TOOLBAR ==================== -->
 <div id="hlBar" role="toolbar" aria-label="Công cụ đánh dấu">
-  <button class="hl-toggle on" id="hlToggle" aria-pressed="true">✎ Highlight: BẬT</button>
+  <button class="hl-toggle on" id="hlToggle" aria-pressed="true" type="button">✎ Highlight: BẬT</button>
   <div class="sep"></div>
-  <button class="hl-swatch y" data-tool="yellow" title="Đánh dấu vàng – quy tắc quan trọng" aria-label="Đánh dấu vàng"></button>
-  <button class="hl-swatch b" data-tool="blue" title="Đánh dấu xanh dương – ví dụ" aria-label="Đánh dấu xanh dương"></button>
-  <button class="hl-swatch g" data-tool="green" title="Đánh dấu xanh lá – đáp án đúng" aria-label="Đánh dấu xanh lá"></button>
-  <button class="hl-swatch p" data-tool="pink" title="Đánh dấu hồng – lỗi thường gặp" aria-label="Đánh dấu hồng"></button>
-  <button class="hl-swatch u" data-tool="underline" title="Gạch chân" aria-label="Gạch chân">U</button>
-  <button class="hl-swatch e" data-tool="eraser" title="Tẩy đánh dấu" aria-label="Tẩy đánh dấu">⌫</button>
+  <button class="hl-swatch y" data-tool="yellow" title="Đánh dấu vàng – quy tắc quan trọng" aria-label="Đánh dấu vàng" type="button"></button>
+  <button class="hl-swatch b" data-tool="blue" title="Đánh dấu xanh dương – ví dụ" aria-label="Đánh dấu xanh dương" type="button"></button>
+  <button class="hl-swatch g" data-tool="green" title="Đánh dấu xanh lá – đáp án đúng" aria-label="Đánh dấu xanh lá" type="button"></button>
+  <button class="hl-swatch p" data-tool="pink" title="Đánh dấu hồng – lỗi thường gặp" aria-label="Đánh dấu hồng" type="button"></button>
+  <button class="hl-swatch u" data-tool="underline" title="Gạch chân" aria-label="Gạch chân" type="button">U</button>
+  <button class="hl-swatch e" data-tool="eraser" title="Tẩy đánh dấu" aria-label="Tẩy đánh dấu" type="button">⌫</button>
   <div class="sep"></div>
-  <button class="hl-tool" id="hlClear" title="Xoá tất cả đánh dấu">Xoá hết</button>
+  <button class="hl-tool" id="hlClear" title="Xoá tất cả đánh dấu" type="button">Xoá hết</button>
 </div>
 
 <!-- Contextual selection toolbar -->
 <div id="selToolbar" hidden role="toolbar" aria-label="Đánh dấu đoạn văn bản đã chọn">
-  <button class="y" data-sel="yellow" aria-label="Đánh dấu vàng" title="Vàng"></button>
-  <button class="b" data-sel="blue" aria-label="Đánh dấu xanh dương" title="Xanh dương"></button>
-  <button class="g" data-sel="green" aria-label="Đánh dấu xanh lá" title="Xanh lá"></button>
-  <button class="p" data-sel="pink" aria-label="Đánh dấu hồng" title="Hồng"></button>
-  <button class="u" data-sel="underline" aria-label="Gạch chân" title="Gạch chân">U</button>
-  <button data-sel="eraser" aria-label="Tẩy đánh dấu" title="Tẩy">⌫</button>
+  <button class="y" data-sel="yellow" aria-label="Đánh dấu vàng" title="Vàng" type="button"></button>
+  <button class="b" data-sel="blue" aria-label="Đánh dấu xanh dương" title="Xanh dương" type="button"></button>
+  <button class="g" data-sel="green" aria-label="Đánh dấu xanh lá" title="Xanh lá" type="button"></button>
+  <button class="p" data-sel="pink" aria-label="Đánh dấu hồng" title="Hồng" type="button"></button>
+  <button class="u" data-sel="underline" aria-label="Gạch chân" title="Gạch chân" type="button">U</button>
+  <button data-sel="eraser" aria-label="Tẩy đánh dấu" title="Tẩy" type="button">⌫</button>
 </div>
 
 <!-- ==================== MY HIGHLIGHTS DRAWER ==================== -->
 <aside id="hlDrawer" aria-label="Ghi chú của tôi">
   <div class="hl-drawer-head">
     <h3>Ghi chú của tôi</h3>
-    <button class="icon-btn" id="hlDrawerClose" aria-label="Đóng">✕</button>
+    <button class="icon-btn" id="hlDrawerClose" aria-label="Đóng" type="button">✕</button>
   </div>
   <div class="hl-drawer-body">
     <div class="hl-filters" id="hlFilters">
-      <button class="chip active" data-filter="all">Tất cả</button>
-      <button class="chip" data-filter="yellow">🟡 Vàng</button>
-      <button class="chip" data-filter="blue">🔵 Xanh dương</button>
-      <button class="chip" data-filter="green">🟢 Xanh lá</button>
-      <button class="chip" data-filter="pink">🩷 Hồng</button>
-      <button class="chip" data-filter="underline">U Gạch chân</button>
+      <button class="chip active" data-filter="all" type="button">Tất cả</button>
+      <button class="chip" data-filter="yellow" type="button">🟡 Vàng</button>
+      <button class="chip" data-filter="blue" type="button">🔵 Xanh dương</button>
+      <button class="chip" data-filter="green" type="button">🟢 Xanh lá</button>
+      <button class="chip" data-filter="pink" type="button">🩷 Hồng</button>
+      <button class="chip" data-filter="underline" type="button">U Gạch chân</button>
     </div>
     <div id="annList"></div>
   </div>
   <div class="drawer-foot">
-    <button class="btn btn-danger" id="hlClearAll" style="width:100%;font-size:.85rem;">Xoá tất cả ghi chú</button>
+    <button class="btn btn-danger" id="hlClearAll" style="width:100%;font-size:.85rem;" type="button">Xoá tất cả ghi chú</button>
   </div>
 </aside>
 
@@ -1007,8 +1017,8 @@ span.hlu{
     <h3 id="modalTitle">Xác nhận</h3>
     <p id="modalMsg"></p>
     <div class="modal-actions">
-      <button class="btn btn-ghost" id="modalNo">Huỷ</button>
-      <button class="btn btn-primary" id="modalYes">Đồng ý</button>
+      <button class="btn btn-ghost" id="modalNo" type="button">Huỷ</button>
+      <button class="btn btn-primary" id="modalYes" type="button">Đồng ý</button>
     </div>
   </div>
 </div>
@@ -1018,7 +1028,6 @@ span.hlu{
 <script>
 /* ============================================================
    UNIT 31 – HAVE TO AND MUST
-   Single-file interactive grammar app. No external dependencies.
    ============================================================ */
 (function(){
 'use strict';
@@ -1054,18 +1063,12 @@ function toast(msg){
 /* ------------------------------------------------------------
    1. STATE & PERSISTENCE
    ------------------------------------------------------------ */
-var LS_KEY = 'unit31_have_to_must_v1';
+var LS_KEY = 'unit31_have_to_must_v2';
 
 var defaultState = {
-  answers: {},        // itemId -> raw value
-  checked: {},        // exKey -> true
-  revealed: {},       // exKey -> true
-  scores: {},         // exKey -> {correct, total}
-  visited: {},        // pageId -> true
-  annotations: [],    // annotation objects
-  hlMode: true,
-  lastPage: 'overview',
-  guided: {}          // guided activity answers
+  answers: {}, checked: {}, revealed: {}, scores: {},
+  visited: {}, annotations: [], hlMode: true,
+  lastPage: 'overview', guided: {}
 };
 
 var state = JSON.parse(JSON.stringify(defaultState));
@@ -1079,13 +1082,12 @@ function loadState(){
         Object.keys(defaultState).forEach(function(k){
           if(parsed[k] !== undefined) state[k] = parsed[k];
         });
-        // sanity
         if(!Array.isArray(state.annotations)) state.annotations = [];
         if(!state.answers) state.answers = {};
         if(!state.scores) state.scores = {};
       }
     }
-  }catch(e){ /* localStorage unavailable — app still works in-memory */ }
+  }catch(e){}
 }
 var saveTimer = null;
 function saveState(){
@@ -1153,11 +1155,11 @@ function go(id){
 
   if(id === 'results') renderResults();
 
-  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+  try { window.scrollTo({top:0, behavior:'instant'}); }
+  catch(e){ window.scrollTo(0,0); }
 }
 
 function updateProgress(){
-  // 9 sections; a section counts as complete when visited
   var done = PAGES.filter(function(p){ return state.visited[p.id]; }).length;
   var pct = Math.round(done / PAGES.length * 100);
   document.getElementById('progressFill').style.width = pct + '%';
@@ -1171,7 +1173,6 @@ function updateProgress(){
   });
 }
 
-/* Sidebar mobile */
 function openSidebar(){
   document.getElementById('sidebar').classList.add('open');
   document.getElementById('overlay').classList.add('open');
@@ -1203,346 +1204,159 @@ function closeModal(){
    ------------------------------------------------------------ */
 var EX = {
 
-  /* ========== EXERCISE 31.1 ========== */
   ex311: {
     title: 'Exercise 31.1 – Complete the sentences',
     items: [
-      { id:'e311-1',
-        pre:'Robert can’t come out with us this evening. He ',
-        post:' late. (he / work)',
-        ans:['has to work'],
-        exp:'Chủ ngữ <b>he</b> → dùng <b>has to</b> + động từ nguyên mẫu: <i>has to work</i>.' },
-
-      { id:'e311-2',
-        pre:'“The bus was late this morning.” “How long ',
-        post:'?” (you / wait)',
-        ans:['did you have to wait'],
-        exp:'Sự việc ở quá khứ (“was late this morning”) → câu hỏi quá khứ: <b>did</b> + you + <b>have to</b> + wait.' },
-
-      { id:'e311-3',
-        pre:'I don’t have much time. ',
-        post:' in ten minutes. (I / go)',
+      { id:'e311-1', pre:'Robert can’t come out with us this evening. He ', post:' late. (he / work)',
+        ans:['has to work'], exp:'Chủ ngữ <b>he</b> → dùng <b>has to</b> + động từ nguyên mẫu: <i>has to work</i>.' },
+      { id:'e311-2', pre:'“The bus was late this morning.” “How long ', post:'?” (you / wait)',
+        ans:['did you have to wait'], exp:'Sự việc ở quá khứ → câu hỏi quá khứ: <b>did</b> + you + <b>have to</b> + wait.' },
+      { id:'e311-3', pre:'I don’t have much time. ', post:' in ten minutes. (I / go)',
         ans:['i have to go', "i'll have to go", 'i will have to go'],
-        exp:'Có thể dùng <b>I have to go</b> (hiện tại, sắp xảy ra) hoặc <b>I’ll have to go</b> (tương lai). Cả hai đều đúng.' },
-
-      { id:'e311-4',
-        pre:'“I’m afraid I can’t stay long.” “What time ',
-        post:'?” (you / go)',
-        ans:['do you have to go'],
-        exp:'Câu hỏi hiện tại với chủ ngữ <b>you</b> → <b>do</b> + you + <b>have to</b> + go.' },
-
-      { id:'e311-5',
-        pre:'Joe starts work at 5 am every day, which means ',
-        post:' at four. (he / get up)',
-        ans:['he has to get up'],
-        exp:'Chủ ngữ <b>he</b> → <b>has to</b> + <i>get up</i>.' },
-
-      { id:'e311-6',
-        pre:'We nearly missed the bus this morning. ',
-        post:' to catch it. (we / run)',
-        ans:['we had to run'],
-        exp:'“this morning” là quá khứ → <b>had to</b> + <i>run</i>.' },
-
-      { id:'e311-7',
-        pre:'Is Lisa usually free on Saturdays or ',
-        post:'? (she / work)',
-        ans:['does she have to work'],
-        exp:'Câu hỏi hiện tại với <b>she</b> → <b>does</b> + she + <b>have</b> to + work (sau <i>does</i> dùng <i>have</i>, không dùng <i>has</i>).' },
-
-      { id:'e311-8',
-        pre:'There was nobody to help me. ',
-        post:' everything by myself. (I / do)',
-        ans:['i had to do'],
-        exp:'“There was nobody” — quá khứ → <b>I had to do</b>.' },
-
-      { id:'e311-9',
-        pre:'How old ',
-        post:' to have a driving licence? (you / be)',
-        ans:['do you have to be'],
-        exp:'Câu hỏi hiện tại với <b>you</b> → <b>do</b> + you + <b>have to</b> + be.' },
-
-      { id:'e311-10',
-        pre:'There was a lot of noise from the street. ',
-        post:' the window. (we / close)',
-        ans:['we had to close'],
-        exp:'“There was” — quá khứ → <b>we had to close</b>.' },
-
-      { id:'e311-11',
-        pre:'Was the exhibition free, or ',
-        post:' to go in? (you / pay)',
-        ans:['did you have to pay'],
-        exp:'Câu hỏi quá khứ → <b>did</b> + you + <b>have to</b> + pay.' }
+        exp:'Có thể dùng <b>I have to go</b> hoặc <b>I’ll have to go</b>. Cả hai đều đúng.' },
+      { id:'e311-4', pre:'“I’m afraid I can’t stay long.” “What time ', post:'?” (you / go)',
+        ans:['do you have to go'], exp:'Câu hỏi hiện tại với chủ ngữ <b>you</b> → <b>do</b> + you + <b>have to</b> + go.' },
+      { id:'e311-5', pre:'Joe starts work at 5 am every day, which means ', post:' at four. (he / get up)',
+        ans:['he has to get up'], exp:'Chủ ngữ <b>he</b> → <b>has to</b> + <i>get up</i>.' },
+      { id:'e311-6', pre:'We nearly missed the bus this morning. ', post:' to catch it. (we / run)',
+        ans:['we had to run'], exp:'“this morning” là quá khứ → <b>had to</b> + <i>run</i>.' },
+      { id:'e311-7', pre:'Is Lisa usually free on Saturdays or ', post:'? (she / work)',
+        ans:['does she have to work'], exp:'Câu hỏi hiện tại với <b>she</b> → <b>does</b> + she + <b>have</b> to + work.' },
+      { id:'e311-8', pre:'There was nobody to help me. ', post:' everything by myself. (I / do)',
+        ans:['i had to do'], exp:'“There was nobody” — quá khứ → <b>I had to do</b>.' },
+      { id:'e311-9', pre:'How old ', post:' to have a driving licence? (you / be)',
+        ans:['do you have to be'], exp:'Câu hỏi hiện tại với <b>you</b> → <b>do</b> + you + <b>have to</b> + be.' },
+      { id:'e311-10', pre:'There was a lot of noise from the street. ', post:' the window. (we / close)',
+        ans:['we had to close'], exp:'“There was” — quá khứ → <b>we had to close</b>.' },
+      { id:'e311-11', pre:'Was the exhibition free, or ', post:' to go in? (you / pay)',
+        ans:['did you have to pay'], exp:'Câu hỏi quá khứ → <b>did</b> + you + <b>have to</b> + pay.' }
     ]
   },
 
-  /* ========== EXERCISE 31.2 ========== */
   ex312: {
     title: 'Exercise 31.2 – Complete the sentences',
     items: [
-      { id:'e312-3',
-        pre:'Excuse me a moment – I ',
-        post:' a phone call. I won’t be long.',
-        ans:['have to make'],
-        exp:'Cụm cố định <b>make a phone call</b>. Chủ ngữ <i>I</i> → <b>have to make</b>.' },
-
-      { id:'e312-4',
-        pre:'You can let me know later what you want to do. You ',
-        post:' now.',
-        ans:["don't have to decide", 'do not have to decide'],
-        exp:'Không bắt buộc phải quyết định ngay → phủ định <b>don’t have to decide</b>.' },
-
-      { id:'e312-5',
-        pre:'I couldn’t find the street I wanted. I ',
-        post:' somebody for directions.',
-        ans:['had to ask'],
-        exp:'“I couldn’t find” — quá khứ → <b>had to ask</b>.' },
-
-      { id:'e312-6',
-        pre:'This car park is free. You ',
-        post:' .',
-        ans:["don't have to pay", 'do not have to pay'],
-        exp:'Bãi đỗ xe miễn phí → không cần trả tiền → <b>don’t have to pay</b>.' },
-
-      { id:'e312-7',
-        pre:'A man was slightly injured in the accident, but he ',
-        post:' to hospital.',
-        ans:["didn't have to go", 'did not have to go'],
-        exp:'Chỉ bị thương nhẹ → đã không cần đến bệnh viện → quá khứ phủ định <b>didn’t have to go</b>.' },
-
-      { id:'e312-8',
-        pre:'Jane has a senior position in the company. She ',
-        post:' important decisions.',
-        ans:['has to make'],
-        exp:'<b>make a decision</b>. Chủ ngữ <i>she</i> → <b>has to make</b>.' },
-
-      { id:'e312-9',
-        pre:'The train was very full and there were no seats free. We ',
-        post:' all the way.',
-        ans:['had to stand'],
-        exp:'Không còn chỗ ngồi — quá khứ → <b>had to stand</b>.' },
-
-      { id:'e312-10',
-        pre:'When Patrick starts his new job next month, he ',
-        post:' 50 miles to work every day.',
-        ans:['will have to drive'],
-        exp:'“next month” — tương lai → <b>will have to drive</b>.' }
+      { id:'e312-3', pre:'Excuse me a moment – I ', post:' a phone call. I won’t be long.',
+        ans:['have to make'], exp:'Cụm cố định <b>make a phone call</b>. Chủ ngữ <i>I</i> → <b>have to make</b>.' },
+      { id:'e312-4', pre:'You can let me know later what you want to do. You ', post:' now.',
+        ans:["don't have to decide", 'do not have to decide'], exp:'Không bắt buộc phải quyết định ngay → phủ định <b>don’t have to decide</b>.' },
+      { id:'e312-5', pre:'I couldn’t find the street I wanted. I ', post:' somebody for directions.',
+        ans:['had to ask'], exp:'“I couldn’t find” — quá khứ → <b>had to ask</b>.' },
+      { id:'e312-6', pre:'This car park is free. You ', post:' .',
+        ans:["don't have to pay", 'do not have to pay'], exp:'Bãi đỗ xe miễn phí → không cần trả tiền → <b>don’t have to pay</b>.' },
+      { id:'e312-7', pre:'A man was slightly injured in the accident, but he ', post:' to hospital.',
+        ans:["didn't have to go", 'did not have to go'], exp:'Chỉ bị thương nhẹ → đã không cần đến bệnh viện → quá khứ phủ định <b>didn’t have to go</b>.' },
+      { id:'e312-8', pre:'Jane has a senior position in the company. She ', post:' important decisions.',
+        ans:['has to make'], exp:'<b>make a decision</b>. Chủ ngữ <i>she</i> → <b>has to make</b>.' },
+      { id:'e312-9', pre:'The train was very full and there were no seats free. We ', post:' all the way.',
+        ans:['had to stand'], exp:'Không còn chỗ ngồi — quá khứ → <b>had to stand</b>.' },
+      { id:'e312-10', pre:'When Patrick starts his new job next month, he ', post:' 50 miles to work every day.',
+        ans:['will have to drive'], exp:'“next month” — tương lai → <b>will have to drive</b>.' }
     ]
   },
 
-  /* ========== EXERCISE 31.3 ========== */
   ex313: {
     title: 'Exercise 31.3 – Correct the sentences',
     okBtn: true,
     items: [
-      { id:'e313-1',
-        pre:'It’s later than I thought. I must go.',
-        post:'',
-        wide:true,
+      { id:'e313-1', pre:'It’s later than I thought. I must go.', post:'', wide:true,
         ans:['ok', 'i must go', 'i have to go'],
-        exp:'Câu này <b>chấp nhận được (OK)</b>. “I must go” diễn tả sự cần thiết do người nói tự nhận thấy — rất tự nhiên. “I have to go” cũng đúng.' },
-
-      { id:'e313-2',
-        pre:'I must start work every day at 8.30.',
-        post:'',
-        wide:true,
+        exp:'Câu này <b>chấp nhận được (OK)</b>. “I must go” rất tự nhiên. “I have to go” cũng đúng.' },
+      { id:'e313-2', pre:'I must start work every day at 8.30.', post:'', wide:true,
         ans:['i have to start work every day at 8.30', 'i have to start work every day at 8:30',
              'i have to start work at 8.30 every day', 'i have to start work at 8:30 every day',
              'every day i have to start work at 8.30', 'every day i have to start work at 8:30'],
-        exp:'Đây là nghĩa vụ lặp lại hằng ngày do công việc quy định → tự nhiên hơn khi dùng <b>have to</b>: <i>I have to start work every day at 8.30.</i>' },
-
-      { id:'e313-3',
-        pre:'I must remember to call Sarah tomorrow.',
-        post:'',
-        wide:true,
+        exp:'Nghĩa vụ lặp lại hằng ngày do công việc quy định → tự nhiên hơn khi dùng <b>have to</b>.' },
+      { id:'e313-3', pre:'I must remember to call Sarah tomorrow.', post:'', wide:true,
         ans:['ok', 'i must remember to call sarah tomorrow'],
-        exp:'<b>OK</b>. “I must remember…” là lời tự nhắc nhở của người nói — <i>must</i> rất tự nhiên ở đây.' },
-
-      { id:'e313-4',
-        pre:'I couldn’t get a taxi last night. I must walk home.',
-        post:'',
-        wide:true,
+        exp:'<b>OK</b>. Đây là lời tự nhắc nhở của người nói — <i>must</i> rất tự nhiên.' },
+      { id:'e313-4', pre:'I couldn’t get a taxi last night. I must walk home.', post:'', wide:true,
         ans:['i had to walk home'],
-        exp:'“last night” là quá khứ → phải dùng <b>had to</b>: <i>I had to walk home.</i> Không dùng <i>must</i> cho nghĩa vụ trong quá khứ.' },
-
-      { id:'e313-5',
-        pre:'You must come and see us again soon.',
-        post:'',
-        wide:true,
+        exp:'“last night” là quá khứ → phải dùng <b>had to</b>: <i>I had to walk home.</i>' },
+      { id:'e313-5', pre:'You must come and see us again soon.', post:'', wide:true,
         ans:['ok', 'you must come and see us again soon', 'you have to come and see us again soon'],
         exp:'<b>OK</b>. Đây là lời mời/khuyên mạnh mẽ — <i>must</i> hoàn toàn tự nhiên.' },
-
-      { id:'e313-6',
-        pre:'Tom isn’t going out this evening. He must study for his exam.',
-        post:'',
-        wide:true,
+      { id:'e313-6', pre:'Tom isn’t going out this evening. He must study for his exam.', post:'', wide:true,
         ans:['he has to study for his exam', 'he must study for his exam',
              'tom has to study for his exam', 'ok'],
-        exp:'Đáp án được mong đợi trong ngữ cảnh này là <b>He has to study for his exam.</b> (nghĩa vụ khách quan do hoàn cảnh). Tuy nhiên <b>“He must study”</b> vẫn đúng ngữ pháp khi người nói muốn nhấn mạnh — nên cả hai đều được chấp nhận.' },
-
-      { id:'e313-7',
-        pre:'We can’t go the usual way because the road is closed. We must go another way.',
-        post:'',
-        wide:true,
+        exp:'Đáp án được mong đợi là <b>He has to study for his exam.</b> Tuy nhiên <b>“He must study”</b> vẫn đúng ngữ pháp — cả hai đều được chấp nhận.' },
+      { id:'e313-7', pre:'We can’t go the usual way because the road is closed. We must go another way.', post:'', wide:true,
         ans:['we have to go another way'],
-        exp:'Nghĩa vụ do hoàn cảnh thực tế (đường bị đóng) → dùng <b>have to</b>: <i>We have to go another way.</i>' },
-
-      { id:'e313-8',
-        pre:'Julia wears glasses. She must wear glasses since she was very young.',
-        post:'',
-        wide:true,
+        exp:'Nghĩa vụ do hoàn cảnh thực tế → dùng <b>have to</b>: <i>We have to go another way.</i>' },
+      { id:'e313-8', pre:'Julia wears glasses. She must wear glasses since she was very young.', post:'', wide:true,
         ans:['she has worn glasses since she was very young',
              'julia has worn glasses since she was very young',
              'she has been wearing glasses since she was very young'],
-        exp:'Với <b>since + mốc thời gian</b>, phải dùng thì hiện tại hoàn thành: <i>She <b>has worn</b> glasses since she was very young.</i> Không dùng <i>must</i> ở đây.' }
+        exp:'Với <b>since + mốc thời gian</b>, phải dùng thì hiện tại hoàn thành: <i>She <b>has worn</b> glasses since she was very young.</i>' }
     ]
   },
 
-  /* ========== EXERCISE 31.4 ========== */
   ex314: {
     title: 'Exercise 31.4 – Mustn’t / Don’t have to / Doesn’t have to',
     items: [
-      { id:'e314-1',
-        pre:'I don’t want anyone to know about our plan. You ',
-        post:' tell anyone.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'mustn’t',
+      { id:'e314-1', pre:'I don’t want anyone to know about our plan. You ', post:' tell anyone.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'mustn’t',
         exp:'Không được phép tiết lộ → <b>mustn’t</b> (cấm đoán).' },
-
-      { id:'e314-2',
-        pre:'Richard ',
-        post:' wear a suit to work, but he usually does.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'doesn’t have to',
-        exp:'Không bắt buộc nhưng vẫn có thể mặc (“but he usually does”) → <b>doesn’t have to</b>. Chủ ngữ <i>Richard</i> = he.' },
-
-      { id:'e314-3',
-        pre:'There’s a lift in the building, so we ',
-        post:' climb the stairs.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'don’t have to',
-        exp:'Có thang máy nên không cần leo cầu thang → <b>don’t have to</b> (không bắt buộc).' },
-
-      { id:'e314-4',
-        pre:'I promised Kate I’d call her tomorrow. I ',
-        post:' forget.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'mustn’t',
+      { id:'e314-2', pre:'Richard ', post:' wear a suit to work, but he usually does.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'doesn’t have to',
+        exp:'Không bắt buộc nhưng vẫn có thể mặc → <b>doesn’t have to</b>. Chủ ngữ <i>Richard</i> = he.' },
+      { id:'e314-3', pre:'There’s a lift in the building, so we ', post:' climb the stairs.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'don’t have to',
+        exp:'Có thang máy nên không cần leo cầu thang → <b>don’t have to</b>.' },
+      { id:'e314-4', pre:'I promised Kate I’d call her tomorrow. I ', post:' forget.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'mustn’t',
         exp:'Đã hứa → không được phép quên → <b>mustn’t</b>.' },
-
-      { id:'e314-5',
-        pre:'I’m not very busy. I have a few things to do, but I ',
-        post:' do them now.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'don’t have to',
+      { id:'e314-5', pre:'I’m not very busy. I have a few things to do, but I ', post:' do them now.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'don’t have to',
         exp:'Không cần làm ngay → <b>don’t have to</b>.' },
-
-      { id:'e314-6',
-        pre:'Sophie likes weekends because she ',
-        post:' get up early.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'doesn’t have to',
+      { id:'e314-6', pre:'Sophie likes weekends because she ', post:' get up early.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'doesn’t have to',
         exp:'Cuối tuần không phải dậy sớm → <b>doesn’t have to</b>. Chủ ngữ <i>she</i>.' },
-
-      { id:'e314-7',
-        pre:'You ',
-        post:' be a good player to enjoy a game of tennis.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'don’t have to',
+      { id:'e314-7', pre:'You ', post:' be a good player to enjoy a game of tennis.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'don’t have to',
         exp:'Không cần phải chơi giỏi mới thấy vui → <b>don’t have to</b>.' },
-
-      { id:'e314-8',
-        pre:'You should keep trying to find a job. You ',
-        post:' give up.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'mustn’t',
+      { id:'e314-8', pre:'You should keep trying to find a job. You ', post:' give up.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'mustn’t',
         exp:'Không được bỏ cuộc → <b>mustn’t</b>.' },
-
-      { id:'e314-9',
-        pre:'I ',
-        post:' eat too much. I’m supposed to be on a diet.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'mustn’t',
+      { id:'e314-9', pre:'I ', post:' eat too much. I’m supposed to be on a diet.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'mustn’t',
         exp:'Đang ăn kiêng → không được ăn nhiều → <b>mustn’t</b>.' },
-
-      { id:'e314-10',
-        pre:'We have plenty of time before our flight. We ',
-        post:' check in yet.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'don’t have to',
+      { id:'e314-10', pre:'We have plenty of time before our flight. We ', post:' check in yet.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'don’t have to',
         exp:'Còn nhiều thời gian → chưa cần check-in → <b>don’t have to</b>.' }
     ]
   },
 
-  /* ========== KNOWLEDGE CHECK (10 new questions) ========== */
   quiz: {
     title: 'Knowledge Check',
     items: [
-      { id:'q1',
-        pre:'The museum is free today, so you ',
-        post:' pay.',
-        options:['don’t have to','mustn’t','doesn’t have to'],
-        answer:'don’t have to',
-        exp:'Bảo tàng miễn phí → không cần trả tiền → <b>don’t have to</b> (không bắt buộc).' },
-
-      { id:'q2',
-        pre:'Passengers ',
-        post:' stand behind the yellow line. It’s a safety rule.',
-        options:['must','don’t have to','had to'],
-        answer:'must',
+      { id:'q1', pre:'The museum is free today, so you ', post:' pay.',
+        options:['don’t have to','mustn’t','doesn’t have to'], answer:'don’t have to',
+        exp:'Bảo tàng miễn phí → không cần trả tiền → <b>don’t have to</b>.' },
+      { id:'q2', pre:'Passengers ', post:' stand behind the yellow line. It’s a safety rule.',
+        options:['must','don’t have to','had to'], answer:'must',
         exp:'Quy định an toàn chính thức → dùng <b>must</b>.' },
-
-      { id:'q3',
-        pre:'Last year I ',
-        post:' take the bus to school every day.',
-        options:['must','have to','had to'],
-        answer:'had to',
-        exp:'“Last year” — quá khứ. Không dùng <i>must</i> cho nghĩa vụ quá khứ → <b>had to</b>.' },
-
-      { id:'q4',
-        pre:'',
-        post:' you have to work this weekend?',
-        options:['Do','Does','Are'],
-        answer:'Do',
-        exp:'Chủ ngữ <b>you</b> → trợ động từ <b>Do</b>. Sau <i>do/does/did</i> luôn dùng <i>have</i>.' },
-
-      { id:'q5',
-        pre:'You ',
-        post:' touch the paintings. It’s forbidden.',
-        options:['mustn’t','don’t have to','doesn’t have to'],
-        answer:'mustn’t',
-        exp:'“forbidden” = bị cấm → <b>mustn’t</b> (không được phép).' },
-
-      { id:'q6',
-        pre:'She ',
-        post:' wear glasses for driving. (have to)',
-        ans:['has to'],
-        exp:'Chủ ngữ <b>she</b> → <b>has to</b> + động từ nguyên mẫu.' },
-
-      { id:'q7',
-        pre:'We ',
-        post:' hurry. We have plenty of time. (not / have to)',
-        ans:["don't have to", 'do not have to'],
-        exp:'Còn nhiều thời gian → không cần phải vội → phủ định <b>don’t have to</b>.' },
-
-      { id:'q8',
-        pre:'We ',
-        post:' leave early tomorrow because our flight is at 6 am.',
-        options:['have to','mustn’t','don’t have to'],
-        answer:'have to',
-        exp:'Nghĩa vụ do hoàn cảnh (chuyến bay lúc 6 giờ sáng) → <b>have to</b>.' },
-
-      { id:'q9',
-        pre:'I ',
-        post:' go now, or I’ll miss my train. (have to)',
-        ans:['have to'],
-        exp:'Chủ ngữ <b>I</b> → <b>have to</b> + động từ nguyên mẫu. (Dạng <i>I must go</i> cũng đúng ngữ pháp, nhưng ở đây luyện cấu trúc <i>have to</i>.)' },
-
-      { id:'q10',
-        pre:'',
-        post:' she have to wear a uniform?',
-        options:['Does','Do','Has'],
-        answer:'Does',
-        exp:'Chủ ngữ <b>she</b> → trợ động từ <b>Does</b>. Sau <i>does</i> dùng <i>have</i>, không dùng <i>has</i>.' }
+      { id:'q3', pre:'Last year I ', post:' take the bus to school every day.',
+        options:['must','have to','had to'], answer:'had to',
+        exp:'“Last year” — quá khứ → <b>had to</b>.' },
+      { id:'q4', pre:'', post:' you have to work this weekend?',
+        options:['Do','Does','Are'], answer:'Do',
+        exp:'Chủ ngữ <b>you</b> → trợ động từ <b>Do</b>.' },
+      { id:'q5', pre:'You ', post:' touch the paintings. It’s forbidden.',
+        options:['mustn’t','don’t have to','doesn’t have to'], answer:'mustn’t',
+        exp:'“forbidden” = bị cấm → <b>mustn’t</b>.' },
+      { id:'q6', pre:'She ', post:' wear glasses for driving. (have to)',
+        ans:['has to'], exp:'Chủ ngữ <b>she</b> → <b>has to</b> + động từ nguyên mẫu.' },
+      { id:'q7', pre:'We ', post:' hurry. We have plenty of time. (not / have to)',
+        ans:["don't have to", 'do not have to'], exp:'Còn nhiều thời gian → không cần phải vội → phủ định <b>don’t have to</b>.' },
+      { id:'q8', pre:'We ', post:' leave early tomorrow because our flight is at 6 am.',
+        options:['have to','mustn’t','don’t have to'], answer:'have to',
+        exp:'Nghĩa vụ do hoàn cảnh → <b>have to</b>.' },
+      { id:'q9', pre:'I ', post:' go now, or I’ll miss my train. (have to)',
+        ans:['have to'], exp:'Chủ ngữ <b>I</b> → <b>have to</b> + động từ nguyên mẫu.' },
+      { id:'q10', pre:'', post:' she have to wear a uniform?',
+        options:['Does','Do','Has'], answer:'Does',
+        exp:'Chủ ngữ <b>she</b> → trợ động từ <b>Does</b>. Sau <i>does</i> dùng <i>have</i>.' }
     ]
   }
 };
@@ -1564,7 +1378,6 @@ function buildExercise(key){
     li.className = 'ex-item';
     li.dataset.item = item.id;
 
-    /* --- Sentence line --- */
     var line = document.createElement('div');
     line.className = 'ex-line';
 
@@ -1576,12 +1389,9 @@ function buildExercise(key){
     var txt = document.createElement('span');
     txt.className = 'ex-text';
 
-    if(item.pre){
-      txt.appendChild(document.createTextNode(item.pre));
-    }
+    if(item.pre) txt.appendChild(document.createTextNode(item.pre));
 
     if(item.options){
-      /* multiple choice: show a gap placeholder */
       var gap = document.createElement('span');
       gap.className = 'gap';
       gap.dataset.gap = item.id;
@@ -1603,9 +1413,7 @@ function buildExercise(key){
       txt.appendChild(inp);
     }
 
-    if(item.post){
-      txt.appendChild(document.createTextNode(item.post));
-    }
+    if(item.post) txt.appendChild(document.createTextNode(item.post));
 
     if(item.okBtn){
       var okb = document.createElement('button');
@@ -1622,12 +1430,10 @@ function buildExercise(key){
     line.appendChild(txt);
     li.appendChild(line);
 
-    /* --- MC options --- */
     if(item.options){
       var opts = document.createElement('div');
       opts.className = 'mc-opts';
       opts.setAttribute('role', 'group');
-      opts.setAttribute('aria-label', 'Lựa chọn cho câu ' + (idx + 1));
       item.options.forEach(function(opt){
         var b = document.createElement('button');
         b.type = 'button';
@@ -1647,15 +1453,12 @@ function buildExercise(key){
         opts.appendChild(b);
       });
       li.appendChild(opts);
-
-      /* restore gap text */
       if(state.answers[item.id]){
         var g2 = li.querySelector('.gap');
         if(g2) g2.textContent = state.answers[item.id];
       }
     }
 
-    /* --- Feedback container --- */
     var fb = document.createElement('div');
     fb.className = 'fb';
     li.appendChild(fb);
@@ -1665,7 +1468,6 @@ function buildExercise(key){
 
   root.appendChild(ol);
 
-  /* restore previous check state */
   if(state.checked[key]) gradeExercise(key, true);
   updateExScoreBadge(key);
 }
@@ -1677,21 +1479,17 @@ function clearItemMark(li){
 }
 
 function getItemValue(item){
-  if(item.options) return state.answers[item.id] || '';
   return state.answers[item.id] || '';
 }
 
 function isItemCorrect(item, val){
   if(!val) return false;
-  if(item.options){
-    return norm(val) === norm(item.answer);
-  }
+  if(item.options) return norm(val) === norm(item.answer);
   var v = norm(val);
   if(!v) return false;
   return item.ans.some(function(a){
     var na = norm(a);
-    if(!na) return false;
-    return v === na || v.endsWith(' ' + na);
+    return na && (v === na || v.endsWith(' ' + na));
   });
 }
 
@@ -1706,7 +1504,6 @@ function correctDisplay(item){
 function gradeExercise(key, silent){
   var ex = EX[key];
   var correct = 0;
-  var total = ex.items.length;
 
   ex.items.forEach(function(item){
     var li = document.querySelector('[data-item="' + item.id + '"]');
@@ -1738,7 +1535,6 @@ function gradeExercise(key, silent){
       fb.appendChild(al);
     }
 
-    /* mark MC buttons */
     if(item.options){
       li.querySelectorAll('.mc-btn').forEach(function(b){
         b.classList.remove('correct','wrong');
@@ -1751,13 +1547,13 @@ function gradeExercise(key, silent){
   });
 
   state.checked[key] = true;
-  state.scores[key] = {correct: correct, total: total};
+  state.scores[key] = {correct: correct, total: ex.items.length};
   saveState();
 
   updateExScoreBadge(key);
   updateProgress();
   if(!silent){
-    toast('Kết quả: ' + correct + '/' + total + ' câu đúng');
+    toast('Kết quả: ' + correct + '/' + ex.items.length + ' câu đúng');
     renderResults();
   }
 }
@@ -1795,8 +1591,7 @@ function revealAnswers(key){
 
   if(key === 'ex313'){
     html += '<p style="margin-top:10px;font-size:.86rem;color:var(--muted);">' +
-      'Lưu ý: Câu 6 chấp nhận cả <b>“He has to study for his exam.”</b> và <b>“He must study for his exam.”</b> — ' +
-      '<i>must</i> đúng ngữ pháp khi người nói muốn nhấn mạnh, nhưng <i>has to</i> tự nhiên hơn trong ngữ cảnh này.</p>';
+      'Lưu ý: Câu 6 chấp nhận cả <b>“He has to study for his exam.”</b> và <b>“He must study for his exam.”</b>.</p>';
   }
 
   box.innerHTML = html;
@@ -1810,9 +1605,7 @@ function revealAnswers(key){
    ------------------------------------------------------------ */
 function retryExercise(key){
   var ex = EX[key];
-  ex.items.forEach(function(item){
-    delete state.answers[item.id];
-  });
+  ex.items.forEach(function(item){ delete state.answers[item.id]; });
   delete state.checked[key];
   delete state.revealed[key];
   delete state.scores[key];
@@ -1822,7 +1615,7 @@ function retryExercise(key){
   if(box){ box.classList.remove('show'); box.innerHTML = ''; }
   updateExScoreBadge(key);
   updateProgress();
-  toast('Đã làm lại ' + ex.title.split('–')[0].trim());
+  toast('Đã làm lại bài tập.');
 }
 
 /* ------------------------------------------------------------
@@ -1834,10 +1627,10 @@ var GUIDED = {
     items: [
       {id:'gA1', s:'You mustn’t tell anyone.', a:'prohibition', exp:'<b>mustn’t</b> = không được phép tiết lộ → cấm đoán.'},
       {id:'gA2', s:'You don’t have to come with me.', a:'notnecessary', exp:'<b>don’t have to</b> = không cần phải, nhưng vẫn có thể đi → không bắt buộc.'},
-      {id:'gA3', s:'You mustn’t smoke here.', a:'prohibition', exp:'<b>mustn’t</b> = không được phép hút thuốc ở đây → cấm đoán.'},
+      {id:'gA3', s:'You mustn’t smoke here.', a:'prohibition', exp:'<b>mustn’t</b> = không được phép hút thuốc → cấm đoán.'},
       {id:'gA4', s:'I don’t have to work tomorrow.', a:'notnecessary', exp:'<b>don’t have to</b> = ngày mai không phải làm việc → không bắt buộc.'},
       {id:'gA5', s:'Students mustn’t use phones during the exam.', a:'prohibition', exp:'<b>mustn’t</b> = không được phép dùng điện thoại → cấm đoán.'},
-      {id:'gA6', s:'She doesn’t have to wear a suit to work.', a:'notnecessary', exp:'<b>doesn’t have to</b> = không bắt buộc phải mặc vest → không cần thiết.'}
+      {id:'gA6', s:'She doesn’t have to wear a suit to work.', a:'notnecessary', exp:'<b>doesn’t have to</b> = không bắt buộc → không cần thiết.'}
     ]
   },
   B: {
@@ -1847,7 +1640,7 @@ var GUIDED = {
       {id:'gB2', s:'I ______ work from 8:30 to 5:30 every day.', opts:['must','have to'], a:'have to', exp:'Nghĩa vụ công việc hằng ngày → <b>have to</b>.'},
       {id:'gB3', s:'Jane ______ travel a lot for her job.', opts:['must','has to'], a:'has to', exp:'Nghĩa vụ do công việc, chủ ngữ <i>she</i> → <b>has to</b>.'},
       {id:'gB4', s:'Seat belts ______ be worn.', opts:['must','have to'], a:'must', exp:'Quy định an toàn chính thức → <b>must</b>.'},
-      {id:'gB5', s:'I ______ leave early yesterday.', opts:['must','had to'], a:'had to', exp:'Nghĩa vụ trong quá khứ → <b>had to</b> (không dùng <i>must</i>).'}
+      {id:'gB5', s:'I ______ leave early yesterday.', opts:['must','had to'], a:'had to', exp:'Nghĩa vụ trong quá khứ → <b>had to</b>.'}
     ]
   },
   C: {
@@ -1875,7 +1668,6 @@ function renderGuided(){
     data.items.forEach(function(item, i){
       var box = document.createElement('div');
       box.style.cssText = 'border:1px solid var(--border-s);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff;';
-      box.dataset.gid = item.id;
 
       var q = document.createElement('div');
       q.style.cssText = 'font-size:.95rem;margin-bottom:8px;';
@@ -1943,7 +1735,6 @@ function renderResults(){
 
   var acc = totalQ ? Math.round(totalCorrect / totalQ * 100) : 0;
 
-  /* --- stats --- */
   var html = '<div class="stat-grid">' +
     '<div class="stat"><div class="v">' + totalQ + '</div><div class="l">Câu đã làm</div></div>' +
     '<div class="stat good"><div class="v">' + totalCorrect + '</div><div class="l">Câu đúng</div></div>' +
@@ -1951,9 +1742,7 @@ function renderResults(){
     '<div class="stat"><div class="v">' + acc + '%</div><div class="l">Tỷ lệ đúng</div></div>' +
     '</div>';
 
-  /* --- per exercise scores --- */
   html += '<div class="card"><h3>Điểm theo từng phần</h3>';
-
   EXERCISE_KEYS.forEach(function(k){
     var ex = EX[k];
     var s = state.scores[k];
@@ -1965,9 +1754,7 @@ function renderResults(){
       ex314:'Exercise 31.4 – Mustn’t / Don’t have to',
       quiz:'Kiểm tra kiến thức (10 câu)'
     })[k];
-
     var pct = done && s ? Math.round(s.correct / s.total * 100) : 0;
-
     html += '<div class="score-row">' +
       '<span class="nm">' + esc(label) + '</span>' +
       '<span class="bar' + (pct === 100 ? ' full' : '') + '"><i style="width:' + pct + '%"></i></span>' +
@@ -1976,7 +1763,6 @@ function renderResults(){
   });
   html += '</div>';
 
-  /* --- completed sections --- */
   html += '<div class="card"><h3>Phần đã hoàn thành</h3><div style="display:flex;flex-wrap:wrap;gap:7px;">';
   PAGES.forEach(function(p){
     var done = !!state.visited[p.id];
@@ -1985,7 +1771,6 @@ function renderResults(){
   });
   html += '</div></div>';
 
-  /* --- mistakes --- */
   var mistakes = [];
   EXERCISE_KEYS.forEach(function(k){
     if(!state.checked[k]) return;
@@ -1993,8 +1778,7 @@ function renderResults(){
       var val = state.answers[item.id] || '';
       if(!isItemCorrect(item, val)){
         mistakes.push({
-          ex: k,
-          q: item.pre + ' ______ ' + item.post,
+          q: (item.pre + ' ______ ' + item.post).replace(/\s+/g,' ').trim(),
           given: val,
           correct: item.options ? item.answer : item.ans[0],
           exp: item.exp
@@ -2008,9 +1792,8 @@ function renderResults(){
     html += '<p class="empty-note">' + (attempted ? 'Tuyệt vời! Không có câu sai nào trong các bài đã kiểm tra.' : 'Bạn chưa kiểm tra bài tập nào. Hãy làm Exercise 31.1 trước nhé.') + '</p>';
   } else {
     mistakes.forEach(function(m){
-      var qText = m.q.replace(/\s+/g,' ').trim();
       html += '<div class="mistake-item">' +
-        '<div class="q">' + esc(qText) + '</div>' +
+        '<div class="q">' + esc(m.q) + '</div>' +
         (m.given ? '<div class="a">Bạn trả lời: ' + esc(m.given) + '</div>' : '<div class="a">Bạn chưa trả lời.</div>') +
         '<div class="c">Đáp án: <b>' + esc(m.correct) + '</b></div>' +
         '<div style="font-size:.82rem;color:var(--muted);margin-top:4px;">' + m.exp + '</div>' +
@@ -2019,11 +1802,10 @@ function renderResults(){
   }
   html += '</div>';
 
-  /* --- actions --- */
   html += '<div class="card tint"><h3>Tiếp tục học</h3>' +
     '<div class="ex-actions" style="border:0;padding:0;margin:0;">' +
-      '<button class="btn btn-primary" id="btnContinue">▶ Tiếp tục học</button>' +
-      '<button class="btn btn-ghost" id="btnMistakes">✎ Luyện lại câu sai</button>' +
+      '<button class="btn btn-primary" id="btnContinue" type="button">▶ Tiếp tục học</button>' +
+      '<button class="btn btn-ghost" id="btnMistakes" type="button">✎ Luyện lại câu sai</button>' +
     '</div></div>';
 
   mount.innerHTML = html;
@@ -2036,47 +1818,38 @@ function renderResults(){
 
   var btnM = document.getElementById('btnMistakes');
   if(btnM) btnM.addEventListener('click', function(){
-    var target = null;
     for(var i=0;i<EXERCISE_KEYS.length;i++){
       var k = EXERCISE_KEYS[i];
       if(!state.checked[k]) continue;
       var hasErr = EX[k].items.some(function(item){
         return !isItemCorrect(item, state.answers[item.id] || '');
       });
-      if(hasErr){ target = k; break; }
+      if(hasErr){ go(k); toast('Xem lại các câu sai trong ' + k.toUpperCase()); return; }
     }
-    if(!target){
-      toast('Không có câu sai nào cần luyện lại. Tuyệt vời!');
-      return;
-    }
-    go(target);
-    toast('Xem lại các câu sai trong ' + target.toUpperCase());
+    toast('Không có câu sai nào cần luyện lại.');
   });
 }
 
-/* ------------------------------------------------------------
-   11. HIGHLIGHT / ANNOTATION SYSTEM
-   ------------------------------------------------------------ */
-var HL_BLOCK_SELECTOR = '.annotatable p, .annotatable li, .annotatable td, .annotatable th, .annotatable h3, .annotatable h4, .annotatable .example .en, .annotatable .example .vi, .annotatable .callout';
+/* ============================================================
+   11. HIGHLIGHT / ANNOTATION SYSTEM (rewritten)
+   ============================================================ */
 
-var selBlock = null;
-var selStart = 0;
-var selEnd = 0;
-
+/* ---- 11.1 Assign stable block ids to every text-bearing element ---- */
 function assignBlockIds(){
   document.querySelectorAll('.annotatable').forEach(function(container){
     var secKey = container.id || 'sec';
-    var nodes = container.querySelectorAll('p, li, td, th, h3, h4, .example .en, .example .vi, .callout');
-    var i = 0;
-    nodes.forEach(function(el){
-      /* skip elements that contain other block-level annotatable nodes */
-      if(el.querySelector('p, li, table, .callout')) return;
+    // Get all elements that can hold text directly, in document order.
+    var nodes = container.querySelectorAll(
+      'p, li, td, th, h3, h4, .example .en, .example .vi, .callout, details.panel > summary'
+    );
+    nodes.forEach(function(el, i){
       if(el.dataset.hlBlock) return;
-      el.dataset.hlBlock = secKey + ':' + (i++);
+      el.dataset.hlBlock = secKey + ':' + i;
     });
   });
 }
 
+/* ---- 11.2 Text-node helpers ---- */
 function getTextNodes(root){
   var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
   var arr = [], n;
@@ -2095,6 +1868,7 @@ function unwrapHighlights(block){
   block.normalize();
 }
 
+/* ---- 11.3 Apply annotations to a single block ---- */
 function applyBlockAnnotations(block){
   var id = block.dataset.hlBlock;
   if(!id) return;
@@ -2105,6 +1879,8 @@ function applyBlockAnnotations(block){
   if(!anns.length) return;
 
   var textNodes = getTextNodes(block);
+  if(!textNodes.length) return;
+
   var offset = 0;
   var entries = textNodes.map(function(tn){
     var s = offset;
@@ -2118,19 +1894,18 @@ function applyBlockAnnotations(block){
     var text = node.nodeValue;
     if(!text) return;
 
-    var overlaps = [];
-    anns.forEach(function(a){
+    // Which annotations overlap this text node?
+    var overlapping = anns.filter(function(a){
+      return a.end > entry.start && a.start < entry.end;
+    });
+    if(!overlapping.length) return;
+
+    // Local boundaries relative to this text node
+    var bounds = [0, text.length];
+    overlapping.forEach(function(a){
       var s = Math.max(a.start, entry.start) - entry.start;
       var e = Math.min(a.end, entry.end) - entry.start;
-      if(e > s) overlaps.push({ s: s, e: e, type: a.type, order: a.id });
-    });
-    if(!overlaps.length) return;
-
-    /* boundaries */
-    var bounds = [0, text.length];
-    overlaps.forEach(function(o){
-      if(o.s > 0 && o.s < text.length) bounds.push(o.s);
-      if(o.e > 0 && o.e < text.length) bounds.push(o.e);
+      bounds.push(s, e);
     });
     bounds = bounds.filter(function(v, i, arr){ return arr.indexOf(v) === i; })
                    .sort(function(a, b){ return a - b; });
@@ -2139,30 +1914,32 @@ function applyBlockAnnotations(block){
     for(var i = 0; i < bounds.length - 1; i++){
       var s = bounds[i], e = bounds[i + 1];
       if(e <= s) continue;
-      var type = null;
-      /* last annotation covering this segment wins (most recent) */
-      overlaps.forEach(function(o){
-        if(o.s <= s && o.e >= e) type = o.type;
-      });
       var piece = text.slice(s, e);
-      if(!type){
+
+      // Last (most recent) annotation covering this segment wins
+      var active = null;
+      overlapping.forEach(function(a){
+        var aS = Math.max(a.start, entry.start) - entry.start;
+        var aE = Math.min(a.end, entry.end) - entry.start;
+        if(aS <= s && aE >= e) active = a;
+      });
+
+      if(!active){
         frag.appendChild(document.createTextNode(piece));
-      } else if(type === 'underline'){
+      } else if(active.type === 'underline'){
         var u = document.createElement('span');
         u.className = 'hlu';
         u.textContent = piece;
         frag.appendChild(u);
       } else {
         var m = document.createElement('mark');
-        m.className = 'hl hl-' + type;
+        m.className = 'hl hl-' + active.type;
         m.textContent = piece;
         frag.appendChild(m);
       }
     }
 
-    if(node.parentNode){
-      node.parentNode.replaceChild(frag, node);
-    }
+    if(node.parentNode) node.parentNode.replaceChild(frag, node);
   });
 }
 
@@ -2172,7 +1949,7 @@ function applyAllAnnotations(){
   });
 }
 
-/* --- selection offset helpers --- */
+/* ---- 11.4 Selection → offsets ---- */
 function offsetInBlock(block, node, nodeOffset){
   var walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT, null, false);
   var count = 0, n;
@@ -2184,7 +1961,7 @@ function offsetInBlock(block, node, nodeOffset){
 }
 
 function findBlock(node){
-  var el = node.nodeType === 3 ? node.parentNode : node;
+  var el = node && node.nodeType === 3 ? node.parentNode : node;
   while(el && el !== document.body){
     if(el.dataset && el.dataset.hlBlock) return el;
     el = el.parentNode;
@@ -2199,7 +1976,7 @@ function captureSelection(){
   var block = findBlock(range.startContainer);
   if(!block) return null;
   var endBlock = findBlock(range.endContainer);
-  if(endBlock !== block) return null; /* single-block only */
+  if(endBlock !== block) return null;
 
   var start = offsetInBlock(block, range.startContainer, range.startOffset);
   var end = offsetInBlock(block, range.endContainer, range.endOffset);
@@ -2210,7 +1987,7 @@ function captureSelection(){
   return { block: block, start: start, end: end, rect: range.getBoundingClientRect() };
 }
 
-/* --- selection toolbar --- */
+/* ---- 11.5 Selection toolbar (positioning) ---- */
 function showSelToolbar(rect){
   var tb = document.getElementById('selToolbar');
   tb.hidden = false;
@@ -2226,8 +2003,12 @@ function showSelToolbar(rect){
 }
 function hideSelToolbar(){
   document.getElementById('selToolbar').hidden = true;
-  selBlock = null;
 }
+
+/* ---- 11.6 Saved selection state ---- */
+var selBlock = null;
+var selStart = 0;
+var selEnd = 0;
 
 function handleSelectionChange(){
   if(!state.hlMode){ hideSelToolbar(); return; }
@@ -2239,24 +2020,56 @@ function handleSelectionChange(){
   showSelToolbar(info.rect);
 }
 
-/* --- apply annotation --- */
+/* If selBlock got cleared, try to recapture the current selection */
+function ensureSelection(){
+  if(selBlock && selEnd > selStart) return true;
+  var info = captureSelection();
+  if(info){
+    selBlock = info.block;
+    selStart = info.start;
+    selEnd = info.end;
+    return true;
+  }
+  return false;
+}
+
+/* ---- 11.7 Apply / remove a highlight ---- */
+function removeAnnotationsInRange(blockId, start, end){
+  state.annotations = state.annotations.filter(function(a){
+    if(a.block !== blockId) return true;
+    var overlap = a.start < end && a.end > start;
+    return !overlap;
+  });
+  saveState();
+}
+
 function applyHighlight(type){
-  if(!selBlock || selEnd <= selStart){ toast('Hãy chọn đoạn văn bản trước.'); return; }
+  if(!ensureSelection()){
+    toast('Hãy bôi đen đoạn văn bản cần đánh dấu.');
+    return;
+  }
+  if(selEnd <= selStart){
+    toast('Hãy bôi đen đoạn văn bản cần đánh dấu.');
+    return;
+  }
+
   var blockId = selBlock.dataset.hlBlock;
+  if(!blockId){
+    toast('Không thể đánh dấu vùng này.');
+    return;
+  }
   var fullText = selBlock.textContent;
 
   if(type === 'eraser'){
     removeAnnotationsInRange(blockId, selStart, selEnd);
     toast('Đã xoá đánh dấu.');
   } else {
-    /* remove exact duplicates */
     var exists = state.annotations.some(function(a){
       return a.block === blockId && a.start === selStart && a.end === selEnd && a.type === type;
     });
     if(exists){
       toast('Đoạn này đã được đánh dấu màu này.');
     } else {
-      /* cap total annotations for performance */
       if(state.annotations.length > 600){
         toast('Đã đạt giới hạn 600 ghi chú. Hãy xoá bớt.');
         return;
@@ -2278,20 +2091,18 @@ function applyHighlight(type){
 
   applyBlockAnnotations(selBlock);
   renderAnnotationList();
-  window.getSelection().removeAllRanges();
+
+  try {
+    var s = window.getSelection();
+    if(s && s.removeAllRanges) s.removeAllRanges();
+  } catch(e){}
   hideSelToolbar();
+  selBlock = null;
+  selStart = 0;
+  selEnd = 0;
 }
 
-function removeAnnotationsInRange(blockId, start, end){
-  state.annotations = state.annotations.filter(function(a){
-    if(a.block !== blockId) return true;
-    var overlap = a.start < end && a.end > start;
-    return !overlap;
-  });
-  saveState();
-}
-
-/* --- clear all --- */
+/* ---- 11.8 Clear all ---- */
 function clearAllAnnotations(){
   if(!state.annotations.length){ toast('Chưa có ghi chú nào.'); return; }
   confirmDialog(
@@ -2311,14 +2122,11 @@ function clearAllAnnotations(){
   );
 }
 
-/* --- My Highlights panel --- */
+/* ---- 11.9 My Highlights drawer ---- */
 var hlFilter = 'all';
 
 function sectionName(secId){
-  var map = {
-    'ann-overview': 'Tổng quan',
-    'ann-lesson': 'Bài học ngữ pháp'
-  };
+  var map = { 'ann-overview':'Tổng quan', 'ann-lesson':'Bài học ngữ pháp' };
   return map[secId] || secId;
 }
 
@@ -2333,7 +2141,8 @@ function renderAnnotationList(){
 
   if(!list.length){
     mount.innerHTML = '<p class="empty-note">' +
-      (state.annotations.length ? 'Không có ghi chú nào với bộ lọc này.' : 'Chưa có ghi chú nào. Bật Highlight Mode và bôi đen đoạn văn bản trong bài học để bắt đầu.') +
+      (state.annotations.length ? 'Không có ghi chú nào với bộ lọc này.' :
+       'Chưa có ghi chú nào. Bật Highlight Mode và bôi đen đoạn văn bản trong bài học để bắt đầu.') +
       '</p>';
     return;
   }
@@ -2346,7 +2155,7 @@ function renderAnnotationList(){
           yellow:'#ffe98a', blue:'#b8dcff', green:'#b9ecc7', pink:'#ffc9d6'
         })[a.type] + '"></span>';
     html += '<div class="ann-item" data-annid="' + esc(a.id) + '" role="button" tabindex="0">' +
-      '<button class="ann-del" data-del="' + esc(a.id) + '" aria-label="Xoá ghi chú">✕</button>' +
+      '<button class="ann-del" data-del="' + esc(a.id) + '" aria-label="Xoá ghi chú" type="button">✕</button>' +
       '<div class="ann-txt">' + colorDot + esc(a.text) + '…</div>' +
       '<div class="ann-meta">' + esc(sectionName(a.section)) + ' · ' + esc(a.type) + '</div>' +
       '</div>';
@@ -2357,7 +2166,7 @@ function renderAnnotationList(){
 function navigateToAnnotation(id){
   var a = state.annotations.filter(function(x){ return x.id === id; })[0];
   if(!a) return;
-  var pageMap = { 'ann-overview': 'overview', 'ann-lesson': 'lesson' };
+  var pageMap = { 'ann-overview':'overview', 'ann-lesson':'lesson' };
   var page = pageMap[a.section] || 'lesson';
   go(page);
   closeDrawer();
@@ -2365,44 +2174,67 @@ function navigateToAnnotation(id){
     var block = document.querySelector('[data-hl-block="' + a.block + '"]');
     if(block){
       block.scrollIntoView({ behavior:'smooth', block:'center' });
+      var oldBg = block.style.background;
       block.style.transition = 'background .4s';
       block.style.background = '#e8f2fb';
-      setTimeout(function(){ block.style.background = ''; }, 1400);
+      setTimeout(function(){ block.style.background = oldBg; }, 1400);
     }
   }, 120);
 }
 
-function openDrawer(){
-  renderAnnotationList();
-  document.getElementById('hlDrawer').classList.add('open');
-}
-function closeDrawer(){
-  document.getElementById('hlDrawer').classList.remove('open');
-}
+function openDrawer(){ renderAnnotationList(); document.getElementById('hlDrawer').classList.add('open'); }
+function closeDrawer(){ document.getElementById('hlDrawer').classList.remove('open'); }
 
-/* --- Highlight mode toggle --- */
+/* ---- 11.10 Highlight mode toggle ---- */
 function setHlMode(on){
-  state.hlMode = on;
+  state.hlMode = !!on;
   saveState();
   var btn = document.getElementById('hlToggle');
-  btn.classList.toggle('on', on);
-  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-  btn.textContent = on ? '✎ Highlight: BẬT' : '✎ Highlight: TẮT';
+  btn.classList.toggle('on', state.hlMode);
+  btn.setAttribute('aria-pressed', state.hlMode ? 'true' : 'false');
+  btn.textContent = state.hlMode ? '✎ Highlight: BẬT' : '✎ Highlight: TẮT';
   document.querySelectorAll('#hlBar .hl-swatch, #hlBar .hl-tool').forEach(function(b){
-    b.disabled = !on;
+    b.disabled = !state.hlMode;
   });
-  if(!on) hideSelToolbar();
+  if(!state.hlMode) hideSelToolbar();
 }
 
-/* ------------------------------------------------------------
-   12. WIRING
-   ------------------------------------------------------------ */
+/* ============================================================
+   12. ROBUST TOOLBAR BUTTON BINDING (mouse + touch)
+   ============================================================ */
+
+/**
+ * Bind a button so it reliably triggers `action` on:
+ *  - Desktop mouse (mousedown preventDefault preserves selection; click fires normally)
+ *  - Touch devices (touchend preventDefault dispatches the action; suppresses synthetic click)
+ */
+function bindActionButton(btn, action){
+  // Desktop: prevent selection loss
+  btn.addEventListener('mousedown', function(e){ e.preventDefault(); });
+
+  // Touch: dispatch on touchend, suppress ghost click
+  btn.addEventListener('touchend', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    action();
+  }, { passive: false });
+
+  // Desktop click (touch click is suppressed by touchend preventDefault)
+  btn.addEventListener('click', function(e){
+    // If a touch device already handled it, the click won't fire; but guard anyway
+    if (e.defaultPrevented) return;
+    action();
+  });
+}
+
+/* ============================================================
+   13. WIRING
+   ============================================================ */
 function wireGlobal(){
-  /* sidebar */
   document.getElementById('btnMenu').addEventListener('click', openSidebar);
   document.getElementById('overlay').addEventListener('click', closeSidebar);
 
-  /* reset */
+  /* Reset all progress */
   document.getElementById('btnReset').addEventListener('click', function(){
     confirmDialog(
       'Đặt lại toàn bộ tiến độ?',
@@ -2411,12 +2243,10 @@ function wireGlobal(){
       function(){
         try{ localStorage.removeItem(LS_KEY); }catch(e){}
         state = JSON.parse(JSON.stringify(defaultState));
-        /* reset DOM */
         EXERCISE_KEYS.forEach(function(k){ buildExercise(k); });
         document.querySelectorAll('[data-hl-block]').forEach(unwrapHighlights);
         renderAnnotationList();
         setHlMode(true);
-        buildGuidedState();
         renderResults();
         updateProgress();
         closeModal();
@@ -2426,7 +2256,7 @@ function wireGlobal(){
     );
   });
 
-  /* modal */
+  /* Modal */
   document.getElementById('modalNo').addEventListener('click', closeModal);
   document.getElementById('modalYes').addEventListener('click', function(){
     if(typeof modalCb === 'function') modalCb();
@@ -2438,7 +2268,7 @@ function wireGlobal(){
     if(e.key === 'Escape'){ closeModal(); closeDrawer(); hideSelToolbar(); }
   });
 
-  /* exercise buttons (delegated) */
+  /* Exercise buttons (delegated) */
   document.getElementById('content').addEventListener('click', function(e){
     var t = e.target.closest('[data-check]');
     if(t){ gradeExercise(t.dataset.check); return; }
@@ -2448,20 +2278,19 @@ function wireGlobal(){
     if(rt){ retryExercise(rt.dataset.retry); return; }
   });
 
-  /* highlight bar */
-  document.getElementById('hlToggle').addEventListener('click', function(){
-    setHlMode(!state.hlMode);
-  });
+  /* Highlight mode toggle */
+  var toggleBtn = document.getElementById('hlToggle');
+  bindActionButton(toggleBtn, function(){ setHlMode(!state.hlMode); });
 
+  /* Bottom toolbar swatches (mouse + touch, robust) */
   document.querySelectorAll('#hlBar .hl-swatch').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      if(!state.hlMode) return;
+    bindActionButton(btn, function(){
+      if(!state.hlMode){ toast('Hãy bật Highlight Mode trước.'); return; }
       var tool = btn.dataset.tool;
       if(tool === 'eraser'){
-        if(!selBlock){ toast('Hãy bôi đen đoạn cần xoá đánh dấu.'); return; }
+        if(!ensureSelection()){ toast('Hãy bôi đen đoạn cần xoá đánh dấu.'); return; }
         applyHighlight('eraser');
       } else {
-        if(!selBlock){ toast('Hãy bôi đen đoạn văn bản cần đánh dấu.'); return; }
         applyHighlight(tool);
       }
     });
@@ -2469,32 +2298,42 @@ function wireGlobal(){
 
   document.getElementById('hlClear').addEventListener('click', clearAllAnnotations);
 
-  /* selection toolbar */
-  var stb = document.getElementById('selToolbar');
-  stb.addEventListener('mousedown', function(e){ e.preventDefault(); });
-  stb.addEventListener('touchstart', function(e){ e.preventDefault(); }, {passive:false});
-  stb.addEventListener('click', function(e){
-    var b = e.target.closest('[data-sel]');
-    if(!b) return;
-    applyHighlight(b.dataset.sel);
+  /* Contextual selection toolbar (mouse + touch, robust) */
+  document.querySelectorAll('#selToolbar [data-sel]').forEach(function(btn){
+    bindActionButton(btn, function(){
+      applyHighlight(btn.dataset.sel);
+    });
   });
 
-  /* selection events */
+  /* Selection tracking */
   var selTimer = null;
   function scheduleSel(){
     clearTimeout(selTimer);
     selTimer = setTimeout(handleSelectionChange, 60);
   }
   document.addEventListener('mouseup', scheduleSel);
-  document.addEventListener('touchend', scheduleSel, {passive:true});
+  document.addEventListener('touchend', function(e){
+    // Only respond to selection outside our own toolbars
+    if(e.target.closest('#hlBar, #selToolbar, #hlDrawer')) return;
+    scheduleSel();
+  }, { passive: true });
   document.addEventListener('keyup', function(e){
     if(e.key === 'Shift' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') scheduleSel();
   });
-  document.addEventListener('mousedown', function(e){
-    if(!e.target.closest('#selToolbar')) hideSelToolbar();
-  });
 
-  /* highlights drawer */
+  /* Hide toolbar when clicking outside the selection / toolbar */
+  document.addEventListener('mousedown', function(e){
+    if(!e.target.closest('#selToolbar, #hlBar, #hlDrawer, #modalBack')){
+      hideSelToolbar();
+    }
+  });
+  document.addEventListener('touchstart', function(e){
+    if(!e.target.closest('#selToolbar, #hlBar, #hlDrawer, #modalBack')){
+      // Don't hide immediately — let touchend fire first, then check
+    }
+  }, { passive: true });
+
+  /* My Highlights */
   document.getElementById('btnHighlights').addEventListener('click', openDrawer);
   document.getElementById('hlDrawerClose').addEventListener('click', closeDrawer);
   document.getElementById('hlClearAll').addEventListener('click', clearAllAnnotations);
@@ -2534,16 +2373,23 @@ function wireGlobal(){
     if(item){ e.preventDefault(); navigateToAnnotation(item.dataset.annid); }
   });
 
-  /* keyboard: close drawer on Escape handled above */
-}
+  /* Prevent accidental text selection inside the highlight toolbar */
+  ['hlBar', 'selToolbar', 'hlDrawer'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('selectstart', function(e){ e.preventDefault(); });
+  });
 
-function buildGuidedState(){
-  /* restore previously chosen guided answers visually is optional —
-     we simply reset the visual state on reload */
+  /* Also prevent tap-and-hold context menu on the toolbar (iOS) */
+  ['hlBar', 'selToolbar'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  });
 }
 
 /* ------------------------------------------------------------
-   13. BOOT
+   14. BOOT
    ------------------------------------------------------------ */
 function boot(){
   loadState();
@@ -2551,22 +2397,18 @@ function boot(){
   buildNav();
   wireGlobal();
 
-  /* render exercises */
   EXERCISE_KEYS.forEach(function(k){ buildExercise(k); });
-
   renderGuided();
 
-  /* annotations */
+  // Annotations need IDs first, then restore, then mode
   assignBlockIds();
   applyAllAnnotations();
   setHlMode(state.hlMode !== false);
   renderAnnotationList();
 
-  /* results + progress */
   renderResults();
   updateProgress();
 
-  /* restore last page */
   var last = state.lastPage && PAGES.some(function(p){ return p.id === state.lastPage; })
     ? state.lastPage
     : 'overview';
